@@ -1,0 +1,197 @@
+<ui:FluentWindow x:Class="RxT.MainWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+                 xmlns:rx="clr-namespace:System.Text.RegularExpressions;assembly=System.Text.RegularExpressions"
+                 Title="RxT - Regex Tester"
+                 Icon="pack://application:,,,/app.ico"
+                 Width="1120" Height="680" MinWidth="820" MinHeight="440"
+                 ExtendsContentIntoTitleBar="True"
+                 WindowBackdropType="Mica"
+                 WindowStartupLocation="CenterScreen">
+
+    <ui:FluentWindow.Resources>
+        <Style x:Key="EditorBorder" TargetType="Border">
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
+        </Style>
+        <Style x:Key="Placeholder" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Margin" Value="40,4,4,4" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}" />
+        </Style>
+        <Style x:Key="Editor" TargetType="avalonEdit:TextEditor">
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="ShowLineNumbers" Value="True" />
+            <Setter Property="WordWrap" Value="False" />
+            <Setter Property="Padding" Value="4" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+            <Setter Property="LineNumbersForeground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+            <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+        </Style>
+    </ui:FluentWindow.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar Grid.Row="0" Title="RxT - Regex Tester">
+            <ui:TitleBar.Icon>
+                <ui:ImageIcon Source="pack://application:,,,/app.ico" />
+            </ui:TitleBar.Icon>
+        </ui:TitleBar>
+
+        <Menu Grid.Row="1" Margin="8,0,8,4" Background="Transparent">
+            <MenuItem x:Name="SettingsMenu">
+                <MenuItem x:Name="ThemeMenu">
+                    <MenuItem x:Name="SystemThemeItem" IsCheckable="True" Click="OnThemeClick" />
+                    <MenuItem x:Name="LightThemeItem" IsCheckable="True" Click="OnThemeClick" />
+                    <MenuItem x:Name="DarkThemeItem" IsCheckable="True" Click="OnThemeClick" />
+                </MenuItem>
+                <MenuItem x:Name="LanguageMenu" />
+            </MenuItem>
+            <MenuItem x:Name="HelpMenu">
+                <MenuItem x:Name="QuickHelpItem" Click="OnQuickHelpClick" />
+                <MenuItem x:Name="AboutItem" Click="OnAboutClick" />
+            </MenuItem>
+        </Menu>
+
+        <Grid Grid.Row="2" Margin="12,0,12,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="360" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="400" MinWidth="240" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" Style="{StaticResource EditorBorder}">
+                    <Grid>
+                        <avalonEdit:TextEditor x:Name="InputEditor" Style="{StaticResource Editor}" />
+                        <TextBlock x:Name="InputPlaceholder" Style="{StaticResource Placeholder}" />
+                    </Grid>
+                </Border>
+
+                <StackPanel Grid.Row="1" Margin="0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBox x:Name="PatternBox"
+                                    FontFamily="Consolas" FontSize="14"
+                                    TextChanged="OnOptionChanged" />
+                        <ui:Button x:Name="CopyButton" Grid.Column="1" Margin="8,0,0,0"
+                                   Icon="{ui:SymbolIcon Copy24}"
+                                   Click="OnCopyClick" />
+                    </Grid>
+
+                    <Grid x:Name="OptionsPanel" Margin="0,10,0,0"
+                          CheckBox.Checked="OnOptionChanged"
+                          CheckBox.Unchecked="OnOptionChanged">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <CheckBox Grid.Row="0" Grid.Column="0" Content="IgnoreCase" Margin="0,0,40,6"
+                                  Tag="{x:Static rx:RegexOptions.IgnoreCase}"
+                                  ToolTip="RegexOptions.IgnoreCase" />
+                        <CheckBox x:Name="MultilineBox" Grid.Row="1" Grid.Column="0" Content="Multiline" Margin="0,0,40,6"
+                                  Tag="{x:Static rx:RegexOptions.Multiline}" />
+                        <CheckBox x:Name="SinglelineBox" Grid.Row="2" Grid.Column="0" Content="Singleline" Margin="0,0,40,6"
+                                  Tag="{x:Static rx:RegexOptions.Singleline}" />
+
+                        <CheckBox Grid.Row="0" Grid.Column="1" Content="IgnoreWhitespace" Margin="0,0,40,6"
+                                  Tag="{x:Static rx:RegexOptions.IgnorePatternWhitespace}"
+                                  ToolTip="RegexOptions.IgnorePatternWhitespace" />
+                        <CheckBox x:Name="ExplicitCaptureBox" Grid.Row="1" Grid.Column="1" Content="ExplicitCapture" Margin="0,0,40,6"
+                                  Tag="{x:Static rx:RegexOptions.ExplicitCapture}" />
+
+                        <CheckBox Grid.Row="0" Grid.Column="2" x:Name="GroupsBox" Margin="0,0,0,6" />
+                        <CheckBox Grid.Row="1" Grid.Column="2" x:Name="ShowEolBox" Margin="0,0,0,6" />
+                        <TextBlock x:Name="EolLabel" Grid.Row="2" Grid.Column="1"
+                                   HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,8,6" />
+                        <ComboBox Grid.Row="2" Grid.Column="2" x:Name="EolBox" Width="110"
+                                  HorizontalAlignment="Left" Margin="11,0,0,6" SelectedIndex="0"
+                                  SelectionChanged="OnEolSelectionChanged">
+                            <ComboBoxItem x:Name="EolOriginalItem" />
+                            <ComboBoxItem Content="CRLF" Tag="CRLF" />
+                            <ComboBoxItem Content="LF" Tag="LF" />
+                            <ComboBoxItem Content="CR" Tag="CR" />
+                        </ComboBox>
+                    </Grid>
+                </StackPanel>
+
+                <Border Grid.Row="2" Style="{StaticResource EditorBorder}">
+                    <Grid>
+                        <avalonEdit:TextEditor x:Name="OutputEditor" Style="{StaticResource Editor}" IsReadOnly="True" />
+                        <TextBlock x:Name="OutputPlaceholder" Style="{StaticResource Placeholder}" />
+                    </Grid>
+                </Border>
+
+                <TextBlock Grid.Row="3" x:Name="StatusText" Margin="2,8,0,0"
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+            </Grid>
+
+            <GridSplitter Grid.Column="1" Width="10" HorizontalAlignment="Center"
+                          Background="Transparent" ShowsPreview="False" />
+
+            <Border Grid.Column="2" Style="{StaticResource EditorBorder}">
+                <ListView x:Name="ReferenceList" BorderThickness="0" Background="Transparent"
+                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          MouseDoubleClick="OnReferenceDoubleClick">
+                    <ListView.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" Margin="4,10,0,4"
+                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </ListView.GroupStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ToolTip="{Binding Description}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="140" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding Pattern}" FontFamily="Consolas"
+                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                                <TextBlock Grid.Column="1" Text="{Binding Description}"
+                                           TextTrimming="CharacterEllipsis"
+                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Border>
+        </Grid>
+    </Grid>
+</ui:FluentWindow>
