@@ -11,7 +11,7 @@
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <ApplicationIcon>app.ico</ApplicationIcon>
     <Version>1.2.0</Version>
-    <Copyright>© Alexander Feuster 2026</Copyright>
+    <Copyright>© Alexander Feuster 2026 - https://github.com/feuster/RxT</Copyright>
     <Product>RxT - Regex Tester</Product>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>

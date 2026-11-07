@@ -53,4 +53,4 @@ Parts of this project (source code, tests and documentation) were created with t
 
 ## License
 
-[MIT](LICENSE), Copyright © 2026 Alexander Feuster
+[MIT](LICENSE), Copyright © 2026 Alexander Feuster, <https://github.com/feuster/RxT>

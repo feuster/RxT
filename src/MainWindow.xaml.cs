@@ -1,10 +1,12 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -88,10 +90,22 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
         var assembly = Assembly.GetExecutingAssembly();
         var version = assembly.GetName().Version!.ToString(3);
         var copyright = assembly.GetCustomAttribute<AssemblyCopyrightAttribute>()!.Copyright;
+        var urlStart = copyright.IndexOf("http", StringComparison.Ordinal);
+        var copyrightText = copyright[..urlStart].TrimEnd(' ', '-');
+        var url = copyright[urlStart..];
+
+        var link = new Hyperlink(new Run(url)) { NavigateUri = new Uri(url) };
+        link.RequestNavigate += (_, args) =>
+            Process.Start(new ProcessStartInfo(args.Uri.AbsoluteUri) { UseShellExecute = true });
+
+        var content = new TextBlock();
+        content.Inlines.Add(new Run($"RxT - Regex Tester\n{Loc.Get("about.version")} {version}\n\n{copyrightText}\n"));
+        content.Inlines.Add(link);
+
         await new Wpf.Ui.Controls.MessageBox
         {
             Title = Loc.Get("menu.about"),
-            Content = $"RxT - Regex Tester\n{Loc.Get("about.version")} {version}\n\n{copyright}",
+            Content = content,
             CloseButtonText = "OK",
             Owner = this,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
